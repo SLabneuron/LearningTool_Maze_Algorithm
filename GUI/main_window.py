@@ -32,8 +32,7 @@ class MainWindow:
         self.create_control_frame()
 
         # Create plot frame for displaying filter response
-        plot_frame = ttk.Frame(self.root, height=40, padding="3 3 12 12")
-        plot_frame.grid(row=1, column=0, sticky="nsew")
+        self.create_plot_frame()
 
         # Figure configure
         self.root.rowconfigure(0, weight=2)
@@ -61,6 +60,10 @@ class MainWindow:
         # Create parameter select
         self.create_param_box()
 
+
+    def create_plot_frame(self):
+        plot_frame = ttk.Frame(self.root, height=40, padding="3 3 12 12")
+        plot_frame.grid(row=0, column=1, sticky="nsew")
 
     def create_filter_type(self):
         # Create radio buttons for selecting the filter type
