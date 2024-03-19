@@ -19,7 +19,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 
-from graphics.graphics import Graphics  # Graphical plotting of characteristics
+from graphics.Animation_Mouse import Graphics  # Graphical plotting of characteristics
 from GUI.main_window import MainWindow  # Main GUI window configuration
 from sims.lpf import LPF
 from sims.hpf import HPF
@@ -71,12 +71,12 @@ class ControlPanel:
         # Set up Figure canvas
         self.graphic_results = Graphics(self.root)
 
-        self.create_output_console()
+        #self.create_output_console()
 
-        self.create_plot_area()
+        #self.create_plot_area()
 
         # Set up Buttons
-        self.create_buttons()
+        #self.create_buttons()
 
 
     def setupMainWindow(self):
