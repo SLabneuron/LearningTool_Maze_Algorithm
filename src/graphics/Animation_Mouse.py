@@ -113,6 +113,8 @@ class MazeExploration:
 
         if self.params["method"] == "左手法":
             self.left_hand_method()
+        elif self.params["method"] == "code_block":
+            self.block_programming()
 
         self.mouse.mouse_eye()
 
@@ -266,6 +268,51 @@ class MazeExploration:
                 break
 
 
+    def block_programming(self):
+        
+        """  """
+        
+        # Patterns
+        directions = ["left", "up", "right", "down"]
+        direction_vectors = {"left": (-1, 0), "up": (0, -1), "right":(1, 0), "down":(0, 1),}
+
+        # Get current direction
+        cur_dir = directions.index(self.mouse.direction)
+
+        """ Prepare block programming """
+
+        # left
+        l_dir_idx = (cur_dir + 3) % 4
+        l_direction = directions[l_dir_idx]
+        ldx, ldy = direction_vectors[l_direction]
+        lnx, lny = self.mouse.position[0] + ldx, self.mouse.position[1] + ldy
+
+        # right
+        r_dir_idx = (cur_dir + 1) % 4
+        r_direction = directions[r_dir_idx]
+        rdx, rdy = direction_vectors[r_direction]
+        rnx, rny = self.mouse.position[0] + rdx, self.mouse.position[1] + rdy
+
+        # front
+        f_dir_idx = (cur_dir + 0) % 4
+        f_direction = directions[f_dir_idx]
+        fdx, fdy = direction_vectors[f_direction]
+        fnx, fny = self.mouse.position[0] + fdx, self.mouse.position[1] + fdy
+
+        # back
+        b_dir_idx = (cur_dir + 2) % 4
+        b_direction = directions[b_dir_idx]
+        bdx, bdy = direction_vectors[b_direction]
+        bnx, bny = self.mouse.position[0] + bdx, self.mouse.position[1] + bdy
+
+        try:
+            #print(self.master.code)
+            exec(self.master.code)
+        except Exception as e:
+            print("error is: ", e)
+            print(self.master.code)
+
+
 class MicroMouse:
 
     def __init__(self, params, config, init_position, init_direction):
@@ -328,6 +375,19 @@ class MicroMouse:
 
         print("cur_dir:", up, "left_dir: ", left)
 
+
+    """ For Algorithm """
+
+    def move(self, maze, nx, ny, direction):
+
+        if nx in range(0, len(maze[0])) and ny in range(0, len(maze)) and maze[ny][nx] != '1':
+            # 壁がない場合に位置を更新
+            self.position = [nx, ny]
+            self.direction = direction
+
+
+
+    """ Image """
 
     def load_image(self):
 

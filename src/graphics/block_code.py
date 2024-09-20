@@ -32,7 +32,7 @@ class BlockSnippet:
 
 
     def move_to_y(self, new_y):
-        
+
         current_coords = self.canvas.coords(self.id)
         dy = new_y - current_coords[1]
         self.canvas.move(self.id, 0, dy)
@@ -40,87 +40,84 @@ class BlockSnippet:
         self.y = new_y
 
 
+    def move_to_x(self, new_x):
+
+        current_coords = self.canvas.coords(self.id)
+        dx = new_x - current_coords[0]
+        self.canvas.move(self.id, dx, 0)
+        self.canvas.move(self.text_id, dx, 0)
+        self.x = new_x
 
 
-class Application(tk.Frame):
-    
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.master = master
-        self.pack()
-        self.create_widgets()
-        self.blocks = []
+    def remove(self):
         
-    
-    def create_widgets(self):
-        self.canvas = tk.Canvas(self, width = 400, height = 300)
-        canvas.pack(side="top", fill="both", expand= True)
-        self.add_button = tk.Button(self, text="add a block", command=self.add_block)
+        self.canvas.delete(self.id)
+        self.canvas.delete(self.text_id)
+
+
+class BlockCompiler:
+
+    def __init__(self):
+
+        self.lut = {
+
+            "if"            : "if ",
+            "else if"       : "elif ",
+            "else"          : "else:",
+            "左に壁がある": "(self.maze[lny][lnx] == '1')",
+            "右に壁がある": "(self.maze[rny][rnx] == '1')",
+            "前に壁がある": "(self.maze[fny][fnx] == '1')",
+            "後ろに壁がある": "(self.maze[bny][bnx] == '1')",
+            "== True": "== True:",
+            "== False": "== False:",
+            "左に進む": "self.mouse.move(self.maze, lnx, lny, l_direction)",
+            "右に進む": "self.mouse.move(self.maze, rnx, rny, r_direction)",
+            "前に進む": "self.mouse.move(self.maze, fnx, fny, f_direction)",
+            "後ろに進む": "self.mouse.move(self.maze, bnx, bny, b_direction)",
+            "----": "    ",
+
+        }
 
 
 
-def add_block():
-    new_block = BlockSnippet(canvas, "条件: 左に壁がない", 10, 10 + len(blocks) * 40)
-    blocks.append(new_block)
+
+    def generate_python_code(self, blocks, canvas):
+        
+
+        python_code = ""
+        indent_spaces = "    "  # 4つのスペースでインデント
+        block_groups = {}
+
+        # ブロックを行（y座標）ごとにまとめる
+        for block in blocks:
+            block_y_coord = canvas.coords(block.id)[1]
+            if block_y_coord not in block_groups:
+                block_groups[block_y_coord] = []
+            block_groups[block_y_coord].append(block)
+
+        # 行ごとにソートし、x座標でインデントレベルを計算
+        sorted_rows = sorted(block_groups.items())
+
+        for row_y, blocks_in_row in sorted_rows:
+            blocks_in_row = sorted(blocks_in_row, key=lambda b: canvas.coords(b.id)[0])
+
+            # 各行の最初のブロックをインデント付きで出力
+            for idx, block in enumerate(blocks_in_row):
+                block_text = block.text
+                if block_text in self.lut:
+                    code_line = self.lut[block_text]
+
+                    # if文やelif文など条件文の場合は改行して書く
+                    if code_line.strip().endswith(":"):
+                        python_code += f"{code_line}"  # それ以外はインデントせず
+                    else:
+                        python_code += f"{code_line} "  # 条件や処理のパーツを空白でつなげる
+
+            # 行が終わったら改行を追加
+            python_code += "\n"
+
+        return python_code
 
 
 
-def on_click(event):
-    global selected_block, last_block, selected_arrow
-    for block in blocks:
-        coords = canvas.coords(block.id)
-        if coords[0] <= event.x <= coords[2] and coords[1] <= event.y <= coords[3]:
 
-            selected_block = block
-            last_block = block  # 現在のブロックをlast_blockとして設定
-            selected_block.start_x, selected_block.start_y = event.x, event.y
-            return
-
-
-def on_drag(event):
-    if selected_block:
-        dx, dy = event.x - selected_block.start_x, event.y - selected_block.start_y
-        selected_block.move(dx, dy)
-        selected_block.start_x, selected_block.start_y = event.x, event.y
-
-
-def on_release(event):
-    global selected_block, selected_arrow
-    if selected_block:
-        selected_block = None
-    if selected_arrow:
-        selected_arrow = None
-
-
-def delete_selected_arrow():
-    global selected_arrow
-    if selected_arrow:
-        canvas.delete(selected_arrow.arrow_id)
-        arrows.remove(selected_arrow)
-        selected_arrow = None
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    root.title("ブロックベースのプログラミングデモ")
-
-    canvas = tk.Canvas(root, width=400, height=300)
-    canvas.pack()
-
-    blocks = []  # 追加されたブロックを追跡
-    arrows = []
-    selected_block = None  # 現在選択されているブロック
-    last_block = None
-    selected_arrow = None
-
-    add_button = tk.Button(root, text="ブロック追加", command=add_block)
-    add_button.pack()
-    
-    delete_button = tk.Button(root, text="矢印削除", command=delete_selected_arrow)
-    delete_button.pack()
-
-    canvas.bind("<Button-1>", on_click)  # クリックイベントのバインド
-    canvas.bind("<B1-Motion>", on_drag)  # ドラッグイベントのバインド
-    canvas.bind("<ButtonRelease-1>", on_release)  # リリースイベントのバインド
-
-    root.mainloop()

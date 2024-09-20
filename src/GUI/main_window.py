@@ -20,6 +20,7 @@ import os
 
 # import my library
 from src.graphics.block_code import BlockSnippet
+from src.graphics.block_code import BlockCompiler
 
 
 
@@ -204,7 +205,7 @@ class MainWindow:
         self.text = tk.Text(frame02, width=40, height=2)
         self.text.grid(row=0, column=3, rowspan=2, sticky="nsw")
         
-        sys.stdout = self
+        #sys.stdout = self
 
     def write(self, msg):
 
@@ -240,7 +241,7 @@ class MainWindow:
         """ Set Functions """
         # Combobox (conditions or procedures)
         cf_combo01 = ttk.Combobox(control_frame, width=10)
-        cf_combo01["value"] = ("条件", "処理")
+        cf_combo01["value"] = ("条件分岐", "条件式", "評価", "処理")
         cf_combo01.current(0)       # Init
         cf_combo01.grid(row=1, column=0)
 
@@ -249,8 +250,10 @@ class MainWindow:
         self.cf_combo02.grid(row=1, column=1)
 
         options = {
-            "条件":("if", "elif", "else"),
-            "処理":("左に進む", "右に進む", "前に進む", "後ろに進む", "止まる"),
+            "条件分岐"  :("if", "else if", "else"),
+            "条件式"    :("左に壁がある", "右に壁がある", "前に壁がある", "後ろに壁がある"),
+            "評価"      :("== True", "== False"),
+            "処理"      :("左に進む", "右に進む", "前に進む", "後ろに進む", "----"),
         }
 
         def update_cf_combo02(event):
@@ -271,19 +274,23 @@ class MainWindow:
         self.canvas.bind("<Button-1>", self.on_click)   # click
         self.canvas.bind("<B1-Motion>", self.on_drag)   # drag
         self.canvas.bind("<ButtonRelease-1>", self.on_release)  # release
+        self.canvas.bind("<Double-Button-3>", self.on_right_double_click)   # right double click
 
 
     def add_block(self):
         new_block = BlockSnippet(self.canvas, self.cf_combo02.get(), self.pos_x, self.pos_y)
-        self.pos_y += 25
         self.blocks.append(new_block)
-    
+
+
     def execute_code(self):
         print("start")
         # Judge executin order
-        sorted_blocks = sorted(self.blocks, key=lambda b: (self.canvas.coords(b.id)[1], self.canvas.coords(b.id)[0]))
-        for block in sorted_blocks:
-            print(f'Executing block: {block.text}')
+
+        inst = BlockCompiler()
+        python_code = inst.generate_python_code(self.blocks, self.canvas)
+        
+        self.master.block_programming(python_code)
+        
 
 
     """ Canvas Config """
@@ -310,7 +317,6 @@ class MainWindow:
                 self.selected_block.x, self.selected_block.y = event.x, event.y
                 return
 
-
     def on_drag(self, event):
         
         def snap_to_row(mouse_y):
@@ -320,6 +326,14 @@ class MainWindow:
             nearest_row_y = round((mouse_y - 10)/row_height)*row_height + 10
             return max(nearest_row_y, 10)
         
+        
+        def snap_to_column(mouse_x):
+            
+            indent = 40
+            
+            nearest_row_x = round((mouse_x - 10)/indent) * indent + 10
+            return max(nearest_row_x, 10)
+        
 
         if self.selected_block:
 
@@ -327,10 +341,24 @@ class MainWindow:
             dx, dy = event.x -self.selected_block.x, event.y - self.selected_block.y
             self.selected_block.move(dx, dy)
             self.selected_block.x = event.x
+            self.selected_block.y = event.y
             
             # Next set row
+            snapped_x = snap_to_column(event.x)
             snapped_y = snap_to_row(event.y)
+            self.selected_block.move_to_x(snapped_x)
             self.selected_block.move_to_y(snapped_y)
+
+
+    def on_right_double_click(self, event):
+        
+        for block in self.blocks:
+            coords = self.canvas.coords(block.id)
+            if coords[0] <= event.x <= coords[2] and coords[1] <= event.y <= coords[3]:
+                block.remove()
+                self.blocks.remove(block)
+                return
+        
 
 
     def on_release(self, event):

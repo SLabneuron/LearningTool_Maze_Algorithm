@@ -22,6 +22,7 @@ from matplotlib.figure import Figure
 
 from src.graphics.Animation_Mouse import MazeExploration  # Graphical plotting of characteristics
 from src.GUI.main_window import MainWindow  # Main GUI window configuration
+from src.graphics.block_code import BlockCompiler
 
 
 class ControlPanel:
@@ -89,6 +90,8 @@ class ControlPanel:
 
 
     def regeneration(self):
+        
+        self.params["method"] = "左手法"
 
         # Maze regeneration
         self.maze.maze_regeneration()
@@ -98,9 +101,22 @@ class ControlPanel:
 
 
     def exploration(self):
+        
+        self.params["method"] = "左手法"
 
         # Start main program
         self.maze.initialize_pygame()
+
+
+    def block_programming(self, code):
+
+        # get plane text
+        self.code = code
+        
+        self.params["method"] = "code_block"
+        
+        self.maze.initialize_pygame()
+        
 
 
     def output_console(self, state):
