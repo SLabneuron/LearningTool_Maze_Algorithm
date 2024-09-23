@@ -16,8 +16,9 @@ class MazeExploration:
 
     def __init__(self, master, params, config, main_frame):
         """
-        Initialize Graphics
-        master: widget of Tkinter
+        Maze and Algorithm
+        
+        
         """
 
         # Get components
@@ -28,12 +29,12 @@ class MazeExploration:
 
         self.running = True
         self.explore_flag = True
-        
+
         self.max_width_pixel = self.config["maze_width_pixel"]
         self.max_height_pixel = self.config["maze_height_pixel"]
         self.cell_size = 20
 
-
+        # init maze
         self.maze = [
             "1111111111111111",
             "1000000000000001",
@@ -52,7 +53,7 @@ class MazeExploration:
             "1210000000000001",
             "1111111111111111"
         ]
-        
+
         init_pos = self.find_start_position()
 
         self.mouse = MicroMouse(self.params, self.config, init_pos, "down")
@@ -62,6 +63,8 @@ class MazeExploration:
         self.set_frame_config()
         self.initialize_pygame()
 
+
+    """ Main Loop """
 
     def pygame_loop(self):
 
@@ -75,9 +78,17 @@ class MazeExploration:
 
         while self.running:
 
+            # Event Handller
             for event in pygame.event.get():
+
+                # Finish pygame (no binding a specific key)
                 if event.type == pygame.QUIT:
                     self.running = False
+
+                # Remove walls (right click)
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+                    mouse_x, mouse_y = event.pos
+                    self.rotate_state_of_wall(mouse_x,  mouse_y)
 
             # check state
             if self.maze[self.mouse.position[1]][self.mouse.position[0]] == "2" and self.output_console2:
@@ -108,6 +119,55 @@ class MazeExploration:
 
             clock.tick(20)
 
+    """ Event Handlers """
+
+    def rotate_state_of_wall(self, x, y):
+        """
+        Description:
+            Event handler that changes the state of a wall in the maze.
+            The state changes in the following order:
+
+                Before  | After
+
+                0 (path)  -> 1 (wall)
+                1 (wall)  -> 2 (start)
+                2 (start) -> 3 (end)
+                3 (end)   -> 4 (start)
+
+        Appendix:
+
+            1. Integer Division (//):
+                This operator performs intefer (floor) division.
+
+                Example)
+                     3.5    ->  3
+                    -2.5    -> -3.0
+
+            2. Why update the entire row?
+                In Python, strings are immutablem which means their contents cant't be changed directly.
+                To update a single character, the entire string (in this case, a row) needs to be modified.
+
+        """
+
+        # get the current position in the maze
+        cell_x = x // self.cell_size
+        cell_y = y // self.cell_size
+
+        # rotate the state of the wall at the current position
+        if self.maze[cell_y][cell_x] == "0":
+            # 0 (path) -> 1 (wall)
+            self.maze[cell_y] = self.maze[cell_y][:cell_x] + "1" + self.maze[cell_y][cell_x+1:]
+        elif self.maze[cell_y][cell_x] == "1":
+            # 1 (wall) -> 2 (start)
+            self.maze[cell_y] = self.maze[cell_y][:cell_x] + "2" + self.maze[cell_y][cell_x+1:]
+        elif self.maze[cell_y][cell_x] == "2":
+            # 2 (start)-> 3 (end)
+            self.maze[cell_y] = self.maze[cell_y][:cell_x] + "3" + self.maze[cell_y][cell_x+1:]
+        elif self.maze[cell_y][cell_x] == "3":
+            # 3 (end)  -> 0 (path)
+            self.maze[cell_y] = self.maze[cell_y][:cell_x] + "0" + self.maze[cell_y][cell_x+1:]
+
+
 
     def explore(self):
 
@@ -118,20 +178,6 @@ class MazeExploration:
 
         self.mouse.mouse_eye()
 
-
-    def set_frame_config(self):
-
-        # Determine OS
-        def set_sdl_driver():
-            if sys.platform == "win32":
-                os.environ['SDL_VIDEODRIVER'] = 'windib'
-            elif sys.platform == "linux" or sys.platform == "linux2":
-                os.environ['SDL_VIDEODRIVER'] = 'x11'
-            elif sys.platform == "darwin":
-                os.environ['SDL_VIDEODRIVER'] = 'cocoa'
-
-        set_sdl_driver()
-        os.environ["SDL_WINDOWID"] = str(self.main_frame.winfo_id())
 
 
     def initialize_pygame(self):
@@ -312,6 +358,32 @@ class MazeExploration:
             print("error is: ", e)
             print(self.master.code)
 
+    # Utils
+    def set_frame_config(self):
+        """
+        Description:
+            Set up SDL environmental variables to ensure that pygame renders inside a tkinter frame.
+            This involves determining the OS-specific SDL video and setting the window ID to the tkinter frame.
+
+        Appendix:
+            Pygame is usually reffers to the environmental variable "SDL_VIDEODRIVER"
+            to determine how to handle window rendering. In this case, by passing the tkinter frame's
+            window ID to "SDL_WINDOWID", pygame is embedded directly within the tkinter frame.
+
+        """
+
+        # Determine OS and set appropriate SDL video driver
+        if sys.platform == "win32":
+            os.environ['SDL_VIDEODRIVER'] = 'windib'
+        elif sys.platform == "linux" or sys.platform == "linux2":
+            os.environ['SDL_VIDEODRIVER'] = 'x11'
+        elif sys.platform == "darwin":
+            os.environ['SDL_VIDEODRIVER'] = 'cocoa'
+
+        # Pass the tkinter frame's window ID to SDL
+        os.environ["SDL_WINDOWID"] = str(self.main_frame.winfo_id())
+
+
 
 class MicroMouse:
 
@@ -343,14 +415,8 @@ class MicroMouse:
         new_x = self.position[0] + delta[0]
         new_y = self.position[1] + delta[1]
 
-        # on Maze Judge
-        if new_x in range(0, len(maze[0])) and new_y in range(0, len(maze)):
-
-            # Wall Judge
-            if maze[new_y][new_x] != "1":
-
-                self.position = [new_x, new_y]
-                self.direction = self.direction
+        # move
+        self.move(maze, new_x, new_y, self.direction)
 
         self.console_flag = True
 
@@ -376,20 +442,34 @@ class MicroMouse:
         print("cur_dir:", up, "left_dir: ", left)
 
 
-    """ For Algorithm """
+    # Operation
 
     def move(self, maze, nx, ny, direction):
+        """
+        Description:
+            move mouse by next position (nx, ny) if not next position is wall
+            update position
 
+        Attribute:
+            maze: maze
+            nx: coordinate x of next position
+            ny: coordinate y of next position
+            direction: next direction
+        """
+
+        # if not next position is wall, position and direction are updated
         if nx in range(0, len(maze[0])) and ny in range(0, len(maze)) and maze[ny][nx] != '1':
-            # 壁がない場合に位置を更新
             self.position = [nx, ny]
             self.direction = direction
 
 
-
-    """ Image """
+    # Utils
 
     def load_image(self):
+        """
+        Description: get figures from "src.images"
+        Use: Init
+        """
 
         image_path = os.path.join(self.params["root_dir"], "src","images")
 
