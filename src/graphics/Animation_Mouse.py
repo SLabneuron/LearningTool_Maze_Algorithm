@@ -17,8 +17,8 @@ class MazeExploration:
     def __init__(self, master, params, config, main_frame):
         """
         Maze and Algorithm
-        
-        
+
+
         """
 
         # Get components
@@ -30,6 +30,7 @@ class MazeExploration:
         self.running = True
         self.explore_flag = True
 
+        # Config of Graphic Spaace
         self.max_width_pixel = self.config["maze_width_pixel"]
         self.max_height_pixel = self.config["maze_height_pixel"]
         self.cell_size = 20
@@ -64,6 +65,39 @@ class MazeExploration:
         self.initialize_pygame()
 
 
+    def initialize_pygame(self):
+
+        # finish thread
+        self.running = False
+
+        if hasattr(self, 'thread') and self.thread.is_alive():
+            return
+
+        pygame.init()
+        self.adjust_cell_size()
+
+        # Flag activate
+        self.output_console2 = True
+        self.output_console3 = True
+        self.running = True             # restart thread
+        self.explore_flag = True
+
+        # Get a current position
+        self.mouse.position = self.find_start_position()
+
+        self.screen = pygame.display.set_mode((400, 400))
+        self.thread = threading.Thread(target=self.pygame_loop, daemon=True)
+        self.thread.start()
+
+
+    def find_start_position(self):
+        for y, row in enumerate(self.maze):
+            for x, cell in enumerate(row):
+                if cell == "2":
+                    return [x, y]
+        return None
+
+
     """ Main Loop """
 
     def pygame_loop(self):
@@ -72,10 +106,8 @@ class MazeExploration:
 
         self.output_console2 = True
         self.output_console3 = True
-        
-        # Maze is static, draw it once before the loop
-        #self.draw_maze()
 
+        # Main Loop
         while self.running:
 
             # Event Handller
@@ -90,14 +122,15 @@ class MazeExploration:
                     mouse_x, mouse_y = event.pos
                     self.rotate_state_of_wall(mouse_x,  mouse_y)
 
-            # check state
-            if self.maze[self.mouse.position[1]][self.mouse.position[0]] == "2" and self.output_console2:
+            # Check State
+            current_state = self.maze[self.mouse.position[1]][self.mouse.position[0]]
+            
+            if current_state == "2" and self.output_console2:
                 self.master.output_console(self.maze[self.mouse.position[1]][self.mouse.position[0]])
                 self.output_console2 = False
             if self.maze[self.mouse.position[1]][self.mouse.position[0]] == "3" and self.output_console3:
                 self.master.output_console(self.maze[self.mouse.position[1]][self.mouse.position[0]])
                 self.output_console3 = False
-                #self.running = False
                 self.explore_flag = False
 
             self.screen.fill((240, 240, 240))
@@ -118,6 +151,17 @@ class MazeExploration:
             self.mouse.console_flag = False
 
             clock.tick(20)
+
+
+    def explore(self):
+
+        if self.params["method"] == "左手法":
+            self.left_hand_method()
+        elif self.params["method"] == "code_block":
+            self.block_programming()
+
+        self.mouse.mouse_eye()
+
 
     """ Event Handlers """
 
@@ -168,52 +212,7 @@ class MazeExploration:
             self.maze[cell_y] = self.maze[cell_y][:cell_x] + "0" + self.maze[cell_y][cell_x+1:]
 
 
-
-    def explore(self):
-
-        if self.params["method"] == "左手法":
-            self.left_hand_method()
-        elif self.params["method"] == "code_block":
-            self.block_programming()
-
-        self.mouse.mouse_eye()
-
-
-
-    def initialize_pygame(self):
-
-        self.running = False
-
-        if hasattr(self, 'thread') and self.thread.is_alive():
-            return
-
-        pygame.init()
-        self.adjust_cell_size()
-
-        self.output_console2 = True
-        self.output_console3 = True
-        self.running = True
-        self.explore_flag = True
-
-        self.mouse.position = self.find_start_position()
-
-        self.screen = pygame.display.set_mode((400, 400))
-        self.thread = threading.Thread(target=self.pygame_loop, daemon=True)
-        self.thread.start()
-
-
-    def adjust_cell_size(self):
-        maze_width = len(self.maze[0])
-        maze_height = len(self.maze)
-        self.cell_size = min(self.max_width_pixel // maze_width, self.max_height_pixel // maze_height)
-
-
-    def find_start_position(self):
-        for y, row in enumerate(self.maze):
-            for x, cell in enumerate(row):
-                if cell == "2":
-                    return [x, y]
-        return None
+    
 
     """ Maze """
 
@@ -230,6 +229,12 @@ class MazeExploration:
         self.maze = self.make_maze(w, h)
 
         self.adjust_cell_size()
+
+
+    def adjust_cell_size(self):
+        maze_width = len(self.maze[0])
+        maze_height = len(self.maze)
+        self.cell_size = min(self.max_width_pixel // maze_width, self.max_height_pixel // maze_height)
 
 
     def draw_maze(self):

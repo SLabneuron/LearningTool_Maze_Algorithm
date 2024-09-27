@@ -205,7 +205,7 @@ class MainWindow:
         self.text = tk.Text(frame02, width=40, height=2)
         self.text.grid(row=0, column=3, rowspan=2, sticky="nsw")
         
-        #sys.stdout = self
+        sys.stdout = self
 
     def write(self, msg):
 
@@ -329,7 +329,7 @@ class MainWindow:
         
         def snap_to_column(mouse_x):
             
-            indent = 40
+            indent = 20
             
             nearest_row_x = round((mouse_x - 10)/indent) * indent + 10
             return max(nearest_row_x, 10)

@@ -19,11 +19,30 @@ class BlockSnippet:
 
     def __init__(self, canvas, text, x, y):
 
-        # make canvas
+        # get canvas and text
         self.canvas = canvas
         self.text = text
-        self.id = canvas.create_rectangle(x, y, x + 120, y + 25, fill="white", outline="black")
-        self.text_id = canvas.create_text(x + 60, y + 12.5, text=text)
+        
+        text_width = {
+
+            "if"           : 40,
+            "else if"      : 40,
+            "else"         : 40,
+            "左に壁がある"  : 80,
+            "右に壁がある"  : 80,
+            "前に壁がある"  : 80,
+            "後ろに壁がある": 80,
+            "== True"       : 60,
+            "== False"      : 60,
+            "左に進む"      : 60,
+            "右に進む"      : 60,
+            "前に進む"      : 60,
+            "後ろに進む"    : 60,
+            "----"          : 40,
+        }
+        
+        self.id = canvas.create_rectangle(x, y, x + text_width[text], y + 25, fill="white", outline="black")
+        self.text_id = canvas.create_text(x + text_width[text]/2, y + 12.5, text=text)
         self.x, self.y = x, y
 
     def move(self, dx, dy):
