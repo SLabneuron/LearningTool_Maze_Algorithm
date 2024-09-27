@@ -61,6 +61,14 @@ It implements basic block programming code snippets and is structured at a level
 
 ## License
 
-  License_jap.lic, License_eng.lic を参照．
+  (japanese)
 
-   
+  このプロジェクトは，特定の条件の下で自由に使用，改変，および配布が許可されています．商用利用を含む詳細な条件については，リポジトリ内の以下を参照してください．
+
+  (english)
+
+  This project may be freely used, modified, and distributed under certain conditions. See below for detailed conditions, including commercial use, in the repository.
+
+  (license)
+
+  License_jap.lic, License_eng.lic
