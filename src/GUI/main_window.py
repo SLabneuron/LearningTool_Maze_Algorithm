@@ -17,11 +17,9 @@ from matplotlib.figure import Figure
 
 import sys
 import os
-<<<<<<< HEAD
-=======
+
 import webbrowser
 from tkinter import font
->>>>>>> master
 
 # import my library
 from src.graphics.block_code import BlockSnippet
@@ -99,19 +97,18 @@ class MainWindow:
         tab3 = ttk.Frame(notebook)
         notebook.add(tab3, text="Practice")
         self.setting_tab3(tab3)
-<<<<<<< HEAD
-=======
+
         
         # Tab4: Tutorial
         tab4 = ttk.Frame(notebook)
         notebook.add(tab4, text="簡易マニュアル")
         self.setting_tab4(tab4)
->>>>>>> master
+
 
 
     def setting_tab1(self, tab):
 
-<<<<<<< HEAD
+
         """ row = 0: detemine maze """
         
         row_frame1 = ttk.Frame(tab)
@@ -137,7 +134,7 @@ class MainWindow:
         button1.grid(row=0, column=4)
 
         """ row = 1: determine explorer method """
-=======
+
         """ row = 0, 1: detemine maze """
 
         title1 = ttk.Label(tab, text="迷路生成")
@@ -175,7 +172,7 @@ class MainWindow:
 
         row_frame2 = tk.Frame(tab)
         row_frame2.grid(row=4, column=0, columnspan=2)
->>>>>>> master
+
 
         # method select
 
@@ -183,23 +180,22 @@ class MainWindow:
             self.params["method"] = combo.get()
             print(self.params["method"])
 
-<<<<<<< HEAD
+
         combo = ttk.Combobox(tab)
-=======
+
         combo = ttk.Combobox(row_frame2)
->>>>>>> master
 
         combo["values"] = ("左手法", "トレモー法")
         combo.current(0)
         combo.bind("<<ComboboxSelected>>", on_combobox_select)
-<<<<<<< HEAD
+
         combo.grid(row=1, column = 0)
 
         # execute the method
 
         button2 = ttk.Button(tab, text="実行", command=self.master.exploration)
         button2.grid(row=1, column=1)
-=======
+
         combo.grid(row=3, column = 0, sticky=tk.W)
 
         # execute the method
@@ -225,7 +221,6 @@ class MainWindow:
         label_url = tk.Label(tab, text="https://github.com/SLabneuron/LearningTool_Maze_Algorithm", fg="blue", cursor="hand2", font=custom_font)
         label_url.grid(row=7, column=0, columnspan=2, sticky=tk.W)
         label_url.bind("<Button-1>", open_url)
->>>>>>> master
 
 
 
@@ -445,11 +440,6 @@ class MainWindow:
                 block.remove()
                 self.blocks.remove(block)
                 return
-<<<<<<< HEAD
-        
-=======
-
->>>>>>> master
 
 
     def on_release(self, event):
@@ -460,9 +450,6 @@ class MainWindow:
 
     def setting_tab3(self, tab):
 
-<<<<<<< HEAD
-        pass
-=======
         msg1 = ttk.Label(tab, text = "準備中")
         msg1.grid(row=0, column=0)
 
@@ -532,7 +519,7 @@ class MainWindow:
         
         msg2_1 = ttk.Label(msg_frame2, text = "道 -> 壁 -> Start -> Goal の順で変わるよ．")
         msg2_1.grid(row=0, column=0)
->>>>>>> master
+
 
 
 
