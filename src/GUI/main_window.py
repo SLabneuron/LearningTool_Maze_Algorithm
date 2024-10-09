@@ -17,6 +17,11 @@ from matplotlib.figure import Figure
 
 import sys
 import os
+<<<<<<< HEAD
+=======
+import webbrowser
+from tkinter import font
+>>>>>>> master
 
 # import my library
 from src.graphics.block_code import BlockSnippet
@@ -94,10 +99,19 @@ class MainWindow:
         tab3 = ttk.Frame(notebook)
         notebook.add(tab3, text="Practice")
         self.setting_tab3(tab3)
+<<<<<<< HEAD
+=======
+        
+        # Tab4: Tutorial
+        tab4 = ttk.Frame(notebook)
+        notebook.add(tab4, text="簡易マニュアル")
+        self.setting_tab4(tab4)
+>>>>>>> master
 
 
     def setting_tab1(self, tab):
 
+<<<<<<< HEAD
         """ row = 0: detemine maze """
         
         row_frame1 = ttk.Frame(tab)
@@ -123,6 +137,45 @@ class MainWindow:
         button1.grid(row=0, column=4)
 
         """ row = 1: determine explorer method """
+=======
+        """ row = 0, 1: detemine maze """
+
+        title1 = ttk.Label(tab, text="迷路生成")
+        title1.grid(row=0, column=0, columnspan=2, sticky=tk.W)
+
+        row_frame1 = ttk.Frame(tab)
+        row_frame1.grid(row=1, column=0, columnspan=2)
+
+        label1 = ttk.Label(row_frame1, text="width")
+        label1.grid(row=1, column=0)
+
+        entry1 = ttk.Entry(row_frame1, width=5)
+        entry1.grid(row=1, column = 1)
+        entry1.insert(0, str(self.config["maze_width"]))
+        self.entries["maze_width_config"] = entry1
+
+        label2 = ttk.Label(row_frame1, text="height")
+        label2.grid(row=1, column=2)
+
+        entry2 = ttk.Entry(row_frame1, width=5)
+        entry2.grid(row=1, column = 3)
+        entry2.insert(0, str(self.config["maze_height"]))
+        self.entries["maze_height_config"] = entry2
+
+        button1 = ttk.Button(row_frame1, text="execute", command=self.master.regeneration)
+        button1.grid(row=1, column=4)
+
+        """ row = 2, 3, 4: determine explorer method """
+
+        blank1 = ttk.Label(tab, text=" ")
+        blank1.grid(row=2, column=0, columnspan=2, sticky=tk.W)
+
+        title2 = ttk.Label(tab, text="探索手法選定")
+        title2.grid(row=3, column=0, columnspan=2, sticky=tk.W)
+
+        row_frame2 = tk.Frame(tab)
+        row_frame2.grid(row=4, column=0, columnspan=2)
+>>>>>>> master
 
         # method select
 
@@ -130,17 +183,49 @@ class MainWindow:
             self.params["method"] = combo.get()
             print(self.params["method"])
 
+<<<<<<< HEAD
         combo = ttk.Combobox(tab)
+=======
+        combo = ttk.Combobox(row_frame2)
+>>>>>>> master
 
         combo["values"] = ("左手法", "トレモー法")
         combo.current(0)
         combo.bind("<<ComboboxSelected>>", on_combobox_select)
+<<<<<<< HEAD
         combo.grid(row=1, column = 0)
 
         # execute the method
 
         button2 = ttk.Button(tab, text="実行", command=self.master.exploration)
         button2.grid(row=1, column=1)
+=======
+        combo.grid(row=3, column = 0, sticky=tk.W)
+
+        # execute the method
+
+        button2 = ttk.Button(row_frame2, text="実行", command=self.master.exploration)
+        button2.grid(row=3, column=1, sticky=tk.W)
+        
+        annotation = ttk.Label(row_frame2, text="※トレモー法は未実装")
+        annotation.grid(row=4, column=0, columnspan=5)
+        
+        """ row = 5, 6, 7: github へのアクセス """
+        
+        blank2 = ttk.Label(tab, text=" ")
+        blank2.grid(row=5, column=0, columnspan=2, sticky=tk.W)
+        
+        def open_url(event):
+            webbrowser.open_new("https://github.com/SLabneuron/LearningTool_Maze_Algorithm")
+
+        url_title = ttk.Label(tab, text="今後の更新が知りたい方はこちら")
+        url_title.grid(row=6, column=0, columnspan=2, sticky=tk.W)
+
+        custom_font = font.Font(family="Helvetica", size=8)
+        label_url = tk.Label(tab, text="https://github.com/SLabneuron/LearningTool_Maze_Algorithm", fg="blue", cursor="hand2", font=custom_font)
+        label_url.grid(row=7, column=0, columnspan=2, sticky=tk.W)
+        label_url.bind("<Button-1>", open_url)
+>>>>>>> master
 
 
 
@@ -252,6 +337,8 @@ class MainWindow:
         options = {
             "条件分岐"  :("if", "else if", "else"),
             "条件式"    :("左に壁がある", "右に壁がある", "前に壁がある", "後ろに壁がある"),
+            "条件式"    :("左に壁がある", "右に壁がある", "前に壁がある", "後ろに壁がある",
+                       "左に壁がない", "右に壁がない", "前に壁がない", "後ろに壁がない"),
             "評価"      :("== True", "== False"),
             "処理"      :("左に進む", "右に進む", "前に進む", "後ろに進む", "----"),
         }
@@ -358,7 +445,11 @@ class MainWindow:
                 block.remove()
                 self.blocks.remove(block)
                 return
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> master
 
 
     def on_release(self, event):
@@ -369,7 +460,79 @@ class MainWindow:
 
     def setting_tab3(self, tab):
 
+<<<<<<< HEAD
         pass
+=======
+        msg1 = ttk.Label(tab, text = "準備中")
+        msg1.grid(row=0, column=0)
+
+        msg2 = ttk.Label(tab, text= "実験６でやったような，センサ・モータの制御も")
+        msg2.grid(row=1, column=0, sticky = tk.W)
+
+        msg3 = ttk.Label(tab, text= "必要な物を作成予定です．")
+        msg3.grid(row=2, column=0, sticky=tk.W)
+
+
+    def setting_tab4(self, tab):
+        
+        # Custom font
+        custom_font = font.Font(family="明朝", size=12, weight="bold")
+        
+        title1 = ttk.Label(tab, text = "簡易マニュアル", font=custom_font)
+        title1.grid(row=0, column=0)
+        
+        blank1 = ttk.Label(tab, text="")
+        blank1.grid(row=1, column=0)
+
+        """ msg_frame1 (row=2, 3): コードスニペットの仕様 """
+
+        msg_frame1_title = ttk.Label(tab, text = "コードスニペットの仕様", font=custom_font)
+        msg_frame1_title.grid(row=2, column=0)
+        
+        msg_frame1 =  ttk.Frame(tab)
+        msg_frame1.grid(row=3, column=0)
+        
+        msg1_1 = ttk.Label(msg_frame1, text = "if 文の下の処理文の前にはインデントを付けよう．")
+        msg1_1.grid(row=0, column=0)
+        
+        msg1_1 = ttk.Label(msg_frame1, text = " ")
+        msg1_1.grid(row=1, column=0)
+        
+        msg1_3 = ttk.Label(msg_frame1, text = "ただしい例")
+        msg1_3.grid(row=2, column=0)
+        
+        msg1_4 = ttk.Label(msg_frame1, text = "if 左に壁がある == False")
+        msg1_4.grid(row=3, column=0)
+        
+        msg1_5 = ttk.Label(msg_frame1, text = "---- 左に進む           ")
+        msg1_5.grid(row=4, column=0)
+        
+        msg1_6 = ttk.Label(msg_frame1, text = " ")
+        msg1_6.grid(row=5, column=0)
+        
+        msg1_7 = ttk.Label(msg_frame1, text = "※ ---- はインデントというpython の必須概念です．")
+        msg1_7.grid(row=6, column=0)
+        
+        msg1_8 = ttk.Label(msg_frame1, text = "　 Cでは関係ないと思う方も多いと思いますが，")
+        msg1_8.grid(row=7, column=0)
+        
+        msg1_9 = ttk.Label(msg_frame1, text = "　 見やすいコードを書く上で大切な概念です．")
+        msg1_9.grid(row=7, column=0)
+        
+        blank2 = ttk.Label(tab, text = "")
+        blank2.grid(row=4, column= 0)
+        
+        """ msg_frame2 (row=5, 6): 迷路を右クリックすると """
+
+        msg_frame2_title = ttk.Label(tab, text = "迷路を右クリックすると．．．", font=custom_font)
+        msg_frame2_title.grid(row=5, column=0)
+        
+        msg_frame2 =  ttk.Frame(tab)
+        msg_frame2.grid(row=6, column=0)
+        
+        msg2_1 = ttk.Label(msg_frame2, text = "道 -> 壁 -> Start -> Goal の順で変わるよ．")
+        msg2_1.grid(row=0, column=0)
+>>>>>>> master
 
 
 
