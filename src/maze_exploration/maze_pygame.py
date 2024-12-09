@@ -69,7 +69,7 @@ class MazeRunning:
                 # Remove walls (right click)
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
                     mouse_x, mouse_y = event.pos
-                    self.rotate_state_of_wall(self, mouse_x,  mouse_y)
+                    self.rotate_state_of_wall(mouse_x,  mouse_y)
 
             if self.console: self.before_goal()
 
